@@ -1,75 +1,86 @@
-# React + TypeScript + Vite
+# A Slice of Pi 🍕
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A small sales dashboard for a fictional pizza chain, "A Slice of Pi". It visualizes
+2023 order, pricing, and review data across the chain's five Ottawa locations
+(Kanata, Orleans, Downtown, Sandy Hill, and The Glebe).
 
-Currently, two official plugins are available:
+Built with React, TypeScript, Vite, and [MUI X Charts](https://mui.com/x/react-charts/).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Revenue summary** – total money made over the selected period, formatted in CAD.
+- **Money made per month** – a line chart of monthly revenue. The month buckets are
+  derived from the data in range, so the chart follows whatever dates are selected.
+- **Orders placed per store** – a bar chart of order counts per location, with
+  additional filters for **pizza type** and **pizza size**.
+- **Reviews per sentiment** – a pie chart breaking down customer reviews by sentiment
+  (angry, sad, happy, delighted).
+- **Recent reviews** – a scrollable list of individual customer reviews.
+- **Global date-range filter** – start/end date inputs at the top of the page filter
+  the revenue, orders, and reviews charts together. Inputs are clamped to the range of
+  the underlying data, and a Reset button restores the full range.
+- **Responsive layout** – the sidebar collapses into a top bar and the panel grids
+  stack into a single column on tablet and mobile widths.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the ESLint configuration
+- [React 19](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vite.dev/) for dev server and build
+- [MUI X Charts](https://mui.com/x/react-charts/) for the line, bar, and pie charts
+- [ESLint](https://eslint.org/) for linting
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Getting started
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Prerequisites
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- [Node.js](https://nodejs.org/) 18 or newer
+- npm (bundled with Node)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Install
 
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+### Run the dev server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+npm run dev
+```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Then open the URL Vite prints (usually http://localhost:5173).
+
+## Available scripts
+
+| Script            | Description                                      |
+| ----------------- | ------------------------------------------------ |
+| `npm run dev`     | Start the Vite dev server with hot reloading.    |
+| `npm run build`   | Type-check (`tsc -b`) and build for production.  |
+| `npm run preview` | Preview the production build locally.            |
+| `npm run lint`    | Run ESLint over the project.                     |
+
+## Project structure
 
 ```
+src/
+├── App.tsx                      # Layout, sidebar nav, and the global date-range filter
+├── App.css                      # Dashboard styling, including responsive breakpoints
+├── components/
+│   ├── moneyMade.tsx            # Money-made-per-month line chart
+│   ├── ordersPlaced.tsx         # Orders-per-store bar chart + type/size filters
+│   ├── reviewsCounts.tsx        # Reviews-per-sentiment pie chart
+│   ├── reviews.tsx              # Scrollable list of individual reviews
+│   └── helpers.tsx              # Shared helpers (revenue totals, date-range filtering)
+└── data_sets/
+    ├── order_data.json          # Orders: store, items (type + size), date
+    ├── pricing_data.json        # Price per pizza type and size
+    └── review_data.json         # Reviews: store, sentiment, message, date
+```
+
+## Data
+
+The dashboard reads from static JSON files in `src/data_sets/`. The data covers the
+2023 calendar year. Prices are looked up per pizza type and size from
+`pricing_data.json`; any order item without a matching price is skipped and logged as a
+warning.

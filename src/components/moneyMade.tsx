@@ -19,7 +19,35 @@ export interface Order {
 
 export type PriceList = Record<string, Record<string, number>>;
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function getMonthRange(orders: Order[]): string[] {
+  if (orders.length === 0) {
+    return [];
+  }
+
+  const monthKeys = orders.map((order) => order.date.slice(0, 7));
+  const first = monthKeys.reduce((min, key) => (key < min ? key : min), monthKeys[0]);
+  const last = monthKeys.reduce((max, key) => (key > max ? key : max), monthKeys[0]);
+
+  const [startYear, startMonth] = first.split('-').map(Number);
+  const [endYear, endMonth] = last.split('-').map(Number);
+
+  const range: string[] = [];
+  for (let year = startYear; year <= endYear; year++) {
+    const from = year === startYear ? startMonth : 1;
+    const to = year === endYear ? endMonth : 12;
+    for (let month = from; month <= to; month++) {
+      range.push(`${year}-${String(month).padStart(2, '0')}`);
+    }
+  }
+  return range;
+}
+
+function monthLabel(monthKey: string): string {
+  const [year, month] = monthKey.split('-').map(Number);
+  return `${MONTH_NAMES[month - 1]} ${year}`;
+}
 
 function calculateMonthlyTotal(
   orders: Order | Order[],
@@ -48,19 +76,18 @@ function MoneyMade({ dateRange }: { dateRange?: DateRange }) {
   const filteredOrders = filterByDateRange(orders as Order[], dateRange);
   const monthlyMoneyMade = calculateMonthlyTotal(filteredOrders, prices as PriceList);
 
-  const monthlyData = months.map((_, index) => {
-    const monthKey = `2023-${String(index + 1).padStart(2, '0')}`;
-    return monthlyMoneyMade[monthKey] ?? 0;
-  });
+  const monthKeys = getMonthRange(filteredOrders);
+  const monthLabels = monthKeys.map(monthLabel);
+  const monthlyData = monthKeys.map((monthKey) => monthlyMoneyMade[monthKey] ?? 0);
 
   return (
     <>
       <section className="money-made card">
-        <h2>Money Made 2023 (per month)</h2>
+        <h2>Money Made (per month)</h2>
         <LineChart
           height={220}
           series={[{ data: monthlyData, }]}
-          xAxis={[{ scaleType: 'point', data: months, height: 28 }]}
+          xAxis={[{ scaleType: 'point', data: monthLabels, height: 28 }]}
           yAxis={[{ width: 50 }]}
         />
       </section>

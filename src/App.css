@@ -63,6 +63,7 @@ body {
   padding: 20px;
   text-align: left;
   color: #fff;
+  height: 100%;
 }
 
 /* ---------- Grid of panels ---------- */
@@ -470,5 +471,28 @@ span.MuiChartsLabel-root.MuiChartsLegend-label {
   .review-list {
     max-height: 320px;
     padding-right: 12px;
+  }
+}
+
+/* ---------- Anchor scrolling for sidebar nav ---------- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Offset anchored sections so they aren't hidden under the top bar
+   when the sidebar collapses into a horizontal header on small screens. */
+#overview,
+#money-made,
+#orders,
+#reviews {
+  scroll-margin-top: 20px;
+}
+
+@media (max-width: 1024px) {
+  #overview,
+  #money-made,
+  #orders,
+  #reviews {
+    scroll-margin-top: 90px;
   }
 }
